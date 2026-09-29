@@ -1,7 +1,7 @@
 return {
   -- Blink.nvim 补全引擎
   {
-    "SentoMK/blink.cmp",
+    "Saghen/blink.cmp",
     version = "1.*",
     dependencies = {
       "rafamadriz/friendly-snippets", -- 代码片段库
@@ -91,15 +91,19 @@ return {
         }
       }
 
-      -- Clangd 配置
-      require('lspconfig').clangd.setup({
+      -- 所有语言服务器共享的能力配置（nvim 0.11+ vim.lsp.config API）
+      vim.lsp.config('*', {
         capabilities = capabilities,
+      })
+
+      -- Clangd 配置
+      vim.lsp.config('clangd', {
         on_attach = function(client, bufnr)
           -- 自定义快捷键
           local opts = { buffer = bufnr, silent = true }
           vim.keymap.set('n', '<leader>ch', '<Cmd>ClangdSwitchSourceHeader<CR>', opts)
           vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, opts)
-          
+
           -- 禁用特定客户端的格式化（如果使用其他格式化工具）
           client.server_capabilities.documentFormattingProvider = false
         end,
@@ -112,11 +116,7 @@ return {
           "--query-driver=/usr/bin/gcc" -- 指定编译器路径
         },
         filetypes = { "c", "cpp", "objc", "objcpp" },
-        root_dir = require('lspconfig.util').root_pattern(
-          'compile_commands.json',
-          '.clangd',
-          '.git'
-        ),
+        root_markers = { 'compile_commands.json', '.clangd', '.git' },
         -- 禁用特定诊断（根据项目需要调整）
         init_options = {
           clangdFileStatus = true,
@@ -125,15 +125,14 @@ return {
           semanticHighlighting = true
         }
       })
-      
+
       -- rust_analyzer 配置
-      require('lspconfig').rust_analyzer.setup({
-        capabilities = capabilities,
+      vim.lsp.config('rust_analyzer', {
         on_attach = function(client, bufnr)
           -- 自定义快捷键
           local opts = { buffer = bufnr, silent = true }
           vim.keymap.set('n', '<leader>rf', vim.lsp.buf.format, opts)
-          
+
           -- 禁用特定客户端的格式化（如果使用其他格式化工具）
           client.server_capabilities.documentFormattingProvider = false
         end,
@@ -154,13 +153,12 @@ return {
       })
 
       -- Lua 语言服务器配置
-      require('lspconfig').lua_ls.setup({
-        capabilities = capabilities,
+      vim.lsp.config('lua_ls', {
         on_attach = function(client, bufnr)
           -- 自定义快捷键
           local opts = { buffer = bufnr, silent = true }
           vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format, opts)
-          
+
           -- 禁用特定客户端的格式化（如果使用其他格式化工具）
           client.server_capabilities.documentFormattingProvider = false
         end,
@@ -183,6 +181,9 @@ return {
           }
         }
       })
+
+      -- 启用以上语言服务器
+      vim.lsp.enable({ 'clangd', 'rust_analyzer', 'lua_ls' })
 
       -- 全局LSP配置（适用于所有语言服务器）
       vim.api.nvim_create_autocmd('LspAttach', {

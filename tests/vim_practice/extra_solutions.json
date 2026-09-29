@@ -1,0 +1,145 @@
+[
+  {
+    "id": "edit_word_tail",
+    "category": "edit",
+    "keys": "cwnew<Esc>"
+  },
+  {
+    "id": "edit_replace_character",
+    "category": "edit",
+    "keys": "r<LT>"
+  },
+  {
+    "id": "edit_transpose_letters",
+    "category": "edit",
+    "keys": "xp"
+  },
+  {
+    "id": "edit_expand_operator",
+    "category": "edit",
+    "keys": "s>=<Esc>"
+  },
+  {
+    "id": "edit_change_until_comma",
+    "category": "edit",
+    "keys": "ct,payload<Esc>"
+  },
+  {
+    "id": "edit_delete_through_comma",
+    "category": "edit",
+    "keys": "df,"
+  },
+  {
+    "id": "edit_replace_line_tail",
+    "category": "edit",
+    "keys": "C5000;<Esc>"
+  },
+  {
+    "id": "edit_remove_trailing_comment",
+    "category": "edit",
+    "keys": "D"
+  },
+  {
+    "id": "edit_replace_statement",
+    "category": "edit",
+    "keys": "ccpublish(value);<Esc>"
+  },
+  {
+    "id": "edit_replace_counted_chars",
+    "category": "edit",
+    "keys": "3sREL<Esc>"
+  },
+  {
+    "id": "edit_repeat_word_change",
+    "category": "edit",
+    "keys": [
+      "cwnew_value<Esc>",
+      "/old_value<CR>."
+    ]
+  },
+  {
+    "id": "edit_substitute_current_line",
+    "category": "edit",
+    "keys": ":s/old/new/g<CR>"
+  },
+  {
+    "id": "object_inner_word_middle",
+    "category": "objects",
+    "keys": "ciwresult<Esc>"
+  },
+  {
+    "id": "object_around_word_space",
+    "category": "objects",
+    "keys": "daw"
+  },
+  {
+    "id": "object_big_word_url",
+    "category": "objects",
+    "keys": "ciWhttps://api.example/v2<Esc>"
+  },
+  {
+    "id": "object_single_quote_content",
+    "category": "objects",
+    "keys": "ci'production<Esc>"
+  },
+  {
+    "id": "object_around_quote_expression",
+    "category": "objects",
+    "keys": "ca\" true<Esc>"
+  },
+  {
+    "id": "object_backtick_command",
+    "category": "objects",
+    "keys": "ci`npm install new-tool<Esc>"
+  },
+  {
+    "id": "object_inner_nested_parens",
+    "category": "objects",
+    "keys": "cibpayload<Esc>"
+  },
+  {
+    "id": "object_around_parens",
+    "category": "objects",
+    "keys": "dab"
+  },
+  {
+    "id": "object_inner_brackets",
+    "category": "objects",
+    "keys": "ci[2, 4, 8<Esc>"
+  },
+  {
+    "id": "object_around_brackets",
+    "category": "objects",
+    "keys": "da["
+  },
+  {
+    "id": "object_inner_braces",
+    "category": "objects",
+    "keys": "ciB retries: 3 <Esc>"
+  },
+  {
+    "id": "object_inner_nested_tag",
+    "category": "objects",
+    "keys": "citReady<Esc>"
+  },
+  {
+    "id": "object_around_nested_tag",
+    "category": "objects",
+    "keys": "dat"
+  },
+  {
+    "id": "object_change_paragraph",
+    "category": "objects",
+    "keys": "cipWrite a regression test.<Esc>"
+  },
+  {
+    "id": "object_inner_sentence",
+    "category": "objects",
+    "keys": "cisCache is fresh.<Esc>"
+  },
+  {
+    "id": "object_around_sentence",
+    "category": "objects",
+    "keys": "das"
+  }
+]
