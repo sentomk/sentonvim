@@ -96,12 +96,18 @@ return {
         capabilities = capabilities,
       })
 
+      -- 保留 nvim-lspconfig 提供的 clangd 命令。
+      local clangd_on_attach = vim.lsp.config.clangd.on_attach
+
       -- Clangd 配置
       vim.lsp.config('clangd', {
         on_attach = function(client, bufnr)
+          if clangd_on_attach then
+            clangd_on_attach(client, bufnr)
+          end
           -- 自定义快捷键
           local opts = { buffer = bufnr, silent = true }
-          vim.keymap.set('n', '<leader>ch', '<Cmd>ClangdSwitchSourceHeader<CR>', opts)
+          vim.keymap.set('n', '<leader>ch', '<Cmd>LspClangdSwitchSourceHeader<CR>', opts)
           vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, opts)
 
           -- 禁用特定客户端的格式化（如果使用其他格式化工具）
@@ -201,10 +207,10 @@ return {
   {
     "folke/trouble.nvim",
     opts = {
-      use_diagnostic_signs = true
+      -- 使用 Trouble 当前版本的默认诊断显示。
     },
     keys = {
-      { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" }
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle Trouble" }
     }
   }
 }
