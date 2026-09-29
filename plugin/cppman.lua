@@ -1,11 +1,11 @@
--- cppman 文档在独立窗口打开，代码中的 K 继续用于 LSP hover。
+-- Open cppman in a separate window; keep K for LSP hover in code buffers.
 local function open_manual(query)
   query = vim.trim(query or '')
   if query == '' then
     return
   end
   if vim.fn.executable('cppman') == 0 then
-    vim.notify('请先安装 cppman：brew install cppman', vim.log.levels.ERROR)
+    vim.notify('Install cppman first: brew install cppman', vim.log.levels.ERROR)
     return
   end
 
@@ -21,14 +21,14 @@ local function open_manual(query)
   vim.wo[win].relativenumber = false
   vim.wo[win].signcolumn = 'no'
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-    '正在加载 ' .. query .. ' …',
-    '首次查询需要联网；q 关闭文档。',
+    'Loading ' .. query .. ' …',
+    'The first lookup requires an internet connection. Press q to close.',
   })
   vim.bo[buf].modifiable = false
   vim.keymap.set('n', 'q', '<Cmd>close<CR>', { buffer = buf, silent = true })
   vim.keymap.set('n', 'K', function()
     open_manual(vim.fn.expand('<cword>'))
-  end, { buffer = buf, desc = '查询此 C++ 名称' })
+  end, { buffer = buf, desc = 'Look up this C++ symbol' })
 
   vim.system({
     'cppman', '--force-columns=' .. math.max(40, vim.api.nvim_win_get_width(win)), '--', query,
@@ -38,8 +38,8 @@ local function open_manual(query)
     end
     local output = vim.trim(result.stdout or '')
     if result.code ~= 0 or output == '' then
-      output = '查询失败：' .. query .. '\n'
-        .. vim.trim(result.stderr or '') .. '\n请检查名称或网络，再用 :Cppman 重试。'
+      output = 'Lookup failed: ' .. query .. '\n'
+        .. vim.trim(result.stderr or '') .. '\nCheck the symbol name or your connection, then retry with :Cppman.'
     end
     vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, '\n', { plain = true }))
@@ -49,7 +49,7 @@ local function open_manual(query)
 end
 
 local function prompt()
-  vim.ui.input({ prompt = 'C++ 文档（例如 std::thread）：' }, function(query)
+  vim.ui.input({ prompt = 'C++ documentation (e.g. std::thread): ' }, function(query)
     if query then
       open_manual(query)
     end
@@ -62,9 +62,9 @@ vim.api.nvim_create_user_command('Cppman', function(args)
   else
     open_manual(args.args)
   end
-end, { nargs = '*', desc = '查询 cppman 标准库文档' })
+end, { nargs = '*', desc = 'Look up C++ standard library documentation with cppman' })
 
 vim.keymap.set('n', '<leader>cm', function()
   open_manual(vim.fn.expand('<cword>'))
-end, { desc = 'C++：查询光标下名称的文档' })
-vim.keymap.set('n', '<leader>cs', prompt, { desc = 'C++：输入名称查询文档' })
+end, { desc = 'C++: Look up the symbol under the cursor' })
+vim.keymap.set('n', '<leader>cs', prompt, { desc = 'C++: Search documentation by name' })
