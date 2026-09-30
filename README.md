@@ -1,6 +1,6 @@
 # sentonvim
 
-个人 Neovim 配置，包含代码补全、语言服务、文件和内容搜索、注释、C++ 文档查询及 Vim 练习台。默认使用 TokyoNight Moon 主题、2 空格缩进（Tab 转空格）和系统剪贴板。
+个人 Neovim 配置，包含代码补全、语言服务、文件和内容搜索、注释、C++ 文档查询及 Vim 练习台。默认使用 TokyoNight Moon 主题、2 空格缩进（Tab 转空格）和系统剪贴板。补全只使用 Blink；各语言共享导航、重命名、代码操作和格式化快捷键。
 
 ## 安装
 
@@ -62,7 +62,16 @@ NVIM_APPNAME=sentonvim nvim
 
 “已启用配置”不代表新机器已经安装对应程序。打开相关文件后，`:lua vim.print(vim.lsp.get_clients({ bufnr = 0 }))` 可查看连接到当前缓冲区的客户端。
 
-C++ 项目建议在项目根目录提供 `compile_commands.json`，让 clangd 获取真实的编译参数和头文件路径。例如 CMake 项目可以开启 `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`，再将生成的文件链接到项目根目录。当前配置还以 `.clangd`、`.git` 识别项目根目录，并启用了后台索引和 clang-tidy。
+C++ 项目建议在项目根目录提供 `compile_commands.json`，让 clangd 获取真实的编译参数和头文件路径。例如 CMake 项目可以开启 `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`，再将生成的文件链接到项目根目录。启用后台索引和 clang-tidy，项目识别使用 nvim-lspconfig 的 clangd 默认规则。配置不强制覆盖项目的 C++ 标准。
+
+单文件练习可在练习目录放置 `.clangd`：
+
+```yaml
+CompileFlags:
+  Add: [-std=c++20]
+```
+
+这只影响 clangd 的解析；实际编译也要传入相同标准。格式风格由项目 `.clang-format` 控制。
 
 ## 插件与本地功能
 
@@ -72,17 +81,13 @@ C++ 项目建议在项目根目录提供 `compile_commands.json`，让 clangd �
 | tokyonight.nvim | TokyoNight Moon 配色 | `lua/plugins/ui.lua` |
 | lualine.nvim | 底部状态栏 | `lua/plugins/ui.lua` |
 | nvim-web-devicons | 文件类型图标，供状态栏和其他界面使用 | `lua/plugins/ui.lua` |
-| dashboard-nvim | 启动页面 | `lua/plugins/ui.lua` |
 | telescope.nvim | 搜索文件、文本、缓冲区、帮助、命令和快捷键 | `lua/plugins/telescope.lua` |
 | plenary.nvim | Telescope 依赖的 Lua 工具库，无单独快捷键 | Telescope 的依赖 |
-| nvim-treesitter | 语法高亮、语法节点选择、缩进和折叠；自动安装 PHP、C++、Rust、Lua、Java 解析器 | `lua/plugins/treesitter.lua` |
-| blink.cmp | 当前主要补全界面：LSP、路径、代码片段、缓冲区内容和函数签名 | `lua/plugins/lsp.lua` |
+| nvim-treesitter | 语法高亮、语法节点选择和折叠；C/C++ 使用内置缩进，其他语言使用 Treesitter 缩进；自动安装 C、C++、Rust、Lua、PHP、Java 解析器 | `lua/plugins/treesitter.lua` |
+| blink.cmp | 当前主要补全界面：LSP、路径、代码片段、缓冲区内容和函数签名 | `lua/plugins/completion.lua` |
 | friendly-snippets | 为补全提供代码片段 | Blink 的依赖 |
-| cmp-nvim-lsp | 生成提供给语言服务器的补全能力信息 | `lua/plugins/lsp.lua` |
-| nvim-cmp | 现有配置中保留的补全插件，未单独配置来源或快捷键；日常补全由 Blink 配置 | `lua/plugins/lsp.lua` |
 | nvim-lspconfig | 提供 clangd、Rust、Lua 等语言服务器的默认配置 | `lua/plugins/lsp.lua` |
 | mason.nvim | 安装和管理语言服务器等开发工具；入口 `:Mason` | `lua/plugins/lsp.lua` |
-| mason-lspconfig.nvim | Mason 与 nvim-lspconfig 的集成；语言启用由当前配置显式设置 | `lua/plugins/lsp.lua` |
 | trouble.nvim | 集中展示诊断错误和警告 | `lua/plugins/lsp.lua` |
 | Comment.nvim | 行注释、块注释及选区注释 | `lua/plugins/comments.lua` |
 | nvim-autopairs | 插入模式自动补齐括号、引号等配对符号 | `lua/plugins/autopairs.lua` |
@@ -91,7 +96,7 @@ C++ 项目建议在项目根目录提供 `compile_commands.json`，让 clangd �
 | Vim Practice 本地练习台 | 122 道题、19 个专题，任务和目标常驻，完成后自动下一题 | `plugin/vim_practice.lua`、`lua/vim_practice/` |
 | Otty 文件支持 | Otty 文件识别和语法高亮 | `ftdetect/otty.vim`、`syntax/otty.vim` |
 
-Telescope 配置中保留了 fzf 选项，但目前没有安装或加载 `telescope-fzf-native.nvim`，因此使用默认搜索排序器。
+Telescope 使用默认排序器；文件浏览使用 Neovim 自带的 netrw。语言服务器通过 Mason 或系统工具链安装，使用 Neovim 内置 LSP 启用，不再额外加载 Mason LSP 桥接插件。
 
 ## 自定义快捷键
 
@@ -109,6 +114,9 @@ Telescope 配置中保留了 fzf 选项，但目前没有安装或加载 `telesc
 | `空格 f s` | 搜索光标下的词 |
 | `空格 f c` | 查找可执行的编辑器命令 |
 | `空格 f k` | 查找当前快捷键映射 |
+| `空格 f d` | 查找当前文件的符号，需要 LSP |
+| `空格 e` | 打开文件浏览器 |
+| `gd` / `gr` / `gi` | LSP 定义 / 引用 / 实现 |
 
 ### 注释、C++ 文档与诊断
 
@@ -116,9 +124,12 @@ Telescope 配置中保留了 fzf 选项，但目前没有安装或加载 `telesc
 | --- | --- |
 | `空格 c c` | 切换当前行的行注释 |
 | `空格 b c` | 切换当前行的块注释 |
-| `空格 c` + 范围动作 | 对指定范围切换行注释，例如 `空格 c }` |
-| `空格 b` + 范围动作 | 对指定范围切换块注释 |
-| 可视模式 `空格 c` / `空格 b` | 对选区切换行注释 / 块注释 |
+| `gc` / `gb` + 范围动作 | Comment.nvim 行注释 / 块注释 |
+| 可视模式 `gc` / `gb` | 对选区切换行注释 / 块注释 |
+| `空格 c f` | 格式化文件；可视模式格式化选区 |
+| `空格 c r` | 重命名符号 |
+| `空格 c a` | 代码操作，例如 clangd 提供的修复建议 |
+| `空格 c d` | 查看当前位置的诊断详情 |
 | `空格 c m` | cppman 查询光标下的名称 |
 | `空格 c s` | 输入名称查询 cppman，例如 `std::thread` |
 | `空格 c h` | clangd 已连接时切换对应的头文件 / 源文件 |
@@ -129,31 +140,38 @@ Telescope 配置中保留了 fzf 选项，但目前没有安装或加载 `telesc
 
 cppman 也可直接运行 `:Cppman std::thread`，或用 `:Cppman` 输入查询。首次打开某页需要网络，已获取的页面由 cppman 缓存。**输入查询使用 `空格 c s`，避免覆盖 Comment.nvim 的 `空格 c c`。**
 
-格式化映射 `空格 c f`（C/C++）、`空格 r f`（Rust）、`空格 l f`（Lua）仍在配置中，但三个 LSP 都显式禁用了格式化能力，且目前未配置替代格式化工具，因此这些映射当前不能用于格式化。启用前需调整 `lua/plugins/lsp.lua`。
+`空格 c f` 对所有语言使用已连接 LSP 的格式化能力；移除旧的 `空格 r f` / `空格 l f`。不自动在保存时格式化。C/C++ 自动换行使用内置 `cindent`，每级 2 空格。
 
 ### 补全与语法节点选择
 
+采用 Blink 自带的 `super-tab` 方案，选中候选时不修改正文，没有自定义预览补丁。HHKB 无需方向键。
+
 | 快捷键 | 生效位置 / 功能 |
 | --- | --- |
-| `Tab` / `Shift+Tab` | 补全菜单：选择下一项 / 上一项 |
-| `↑` / `↓` | 补全菜单：选择上一项 / 下一项 |
-| `Enter` | 补全菜单：接受当前选项 |
-| `Ctrl+Space` | Blink：显示补全或切换补全文档 |
-| `Ctrl+e` | Blink：取消补全 |
+| `Ctrl+n` / `Ctrl+p` | 补全列表下一项 / 上一项 |
+| `Tab` | 确认候选；进入参数片段后跳下一参数；无候选和片段时正常缩进 |
+| `Shift+Tab` | 上一参数 |
+| `Enter` | 确认已选中的候选；未选中时正常换行 |
+| `Ctrl+Space` | 显示补全或切换补全文档 |
+| `Ctrl+e` | 关闭补全列表 |
 | `Ctrl+b` / `Ctrl+f` | 补全文档向上 / 向下滚动 |
-| `Ctrl+k` | 插入模式：显示 / 隐藏函数签名 |
+| `Ctrl+k` | 插入模式显示 / 隐藏函数签名 |
 | `Enter` | 普通模式开始 Treesitter 节点选择；选区内继续扩大节点 |
 | `Backspace` | Treesitter 选区内缩小节点 |
 | `Tab` | Treesitter 选区内扩大到作用域 |
+
+例如输入 `std::vec` 后按 `Tab` 确认首项，clangd 提供的模板占位符会被选中；输入 `int` 替换，再按 `Tab` 跳出。需要别的候选就先用 `Ctrl+n/p` 选择。填写函数参数时，即使列表弹出，只要没有主动选择候选，`Tab` 仍跳到下一参数；主动选择后，`Tab` 确认该候选。占位符内容由语言服务器提供。
 
 ### 本配置的编辑快捷键
 
 | 快捷键 | 功能 |
 | --- | --- |
 | `Ctrl+s` | 普通模式保存；插入模式先退出再保存 |
-| `Ctrl+a` | 普通模式选择全文 |
+| `空格 w` | 保存文件 |
+| `空格 /` | 清除搜索高亮 |
 | 插入模式 `jk` | 退出插入模式 |
-| `Ctrl+z` / `Ctrl+y` | 普通或插入模式撤销 / 重做 |
+
+删除原先 `Ctrl+a` 全选、`Ctrl+z/y` 撤销和重做的覆盖，恢复原生行为。搜索默认忽略大小写，输入大写字母时区分大小写。新分屏默认向右 / 向下打开。
 
 ### Vim Practice
 
@@ -182,7 +200,7 @@ HHKB 等键盘可以用 `:VimPracticePrev`、`:VimPracticeNext` 等命令。完�
 | `:VimPractice` | 打开练习台 |
 | `:checkhealth` | 排查环境问题 |
 
-Markdown 预览目前将浏览器指定为 `google-chrome`；若本机无法通过这个名字启动浏览器，可在 `lua/plugins/markdown-preview.lua` 中调整 `vim.g.mkdp_browser`，或删除该设置使用默认浏览器。插件首次安装会下载预览服务组件；安装失败时先查看 `:Lazy` 构建日志。
+Markdown 预览使用系统默认浏览器。插件首次安装会下载预览服务组件；安装失败时先查看 `:Lazy` 构建日志。
 
 修改配置后重启 Neovim。更新插件会改变锁文件；提交配置时也应检查 `lazy-lock.json` 的改动。
 
@@ -191,3 +209,20 @@ Markdown 预览目前将浏览器指定为 `google-chrome`；若本机无法通�
 ```sh
 bash tests/install.sh
 ```
+
+补全回归检查（需要 `clangd` 和可用的 C++ 标准库头文件；使用临时 C++ 文件和真实按键）：
+
+```sh
+python3 tests/completion.py
+python3 tests/cpp_indent.py
+```
+
+## 配置结构
+
+- `lua/core/options.lua`：缩进、搜索和窗口等基础选项。
+- `lua/core/keymaps.lua`：保存、搜索高亮、文件浏览等全局快捷键。
+- `lua/plugins/completion.lua`：Blink 补全和参数跳转。
+- `lua/plugins/lsp.lua`：语言服务器与统一代码操作。
+- `lua/plugins/` 其他文件：各插件配置，由 lazy.nvim 自动发现。
+
+本次精简移除了 nvim-cmp、cmp-nvim-lsp、mason-lspconfig 和启动 Dashboard。锁定的其余插件版本保持不变，`lazy-lock.json` 已移除不再使用的插件条目。旧插件目录即使仍存在也不会加载，可在 `:Lazy` 中查看清理列表。

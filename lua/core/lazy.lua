@@ -1,21 +1,17 @@
 local M = {}
 
 function M.setup()
-    -- Lazy.nvim 安装检测
-    local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-    if not vim.loop.fs_stat(lazypath) then
-        vim.fn.system({
-            "git",
-            "clone",
-            "--filter=blob:none",
-            "https://github.com/folke/lazy.nvim.git",
-            "--branch=stable",
-            lazypath
-        })
+  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  if not vim.uv.fs_stat(lazypath) then
+    local output = vim.fn.system({
+      "git", "clone", "--filter=blob:none", "--branch=stable",
+      "https://github.com/folke/lazy.nvim.git", lazypath,
+    })
+    if vim.v.shell_error ~= 0 then
+      error("Failed to install lazy.nvim: " .. output)
     end
-
-    -- 添加至 runtimepath
-    vim.opt.rtp:prepend(lazypath)
+  end
+  vim.opt.rtp:prepend(lazypath)
 end
 
 return M

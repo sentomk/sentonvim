@@ -1,16 +1,11 @@
 return {
-  'numToStr/Comment.nvim',
-  config = function()
-    require('Comment').setup({
-      toggler = {
-        line = '<leader>cc', -- 行注释切换
-        block = '<leader>bc', -- 块注释切换
-      },
-      opleader = {
-        line = '<leader>c',
-        block = '<leader>b',
-      }
-    })
-  end
+  "numToStr/Comment.nvim",
+  opts = {},
+  config = function(_, opts)
+    require("Comment").setup(opts)
+    local api = require("Comment.api")
+    -- Keep the familiar line toggles; use gc/gb for motions and selections.
+    vim.keymap.set("n", "<leader>cc", api.toggle.linewise.current, { desc = "Toggle line comment" })
+    vim.keymap.set("n", "<leader>bc", api.toggle.blockwise.current, { desc = "Toggle block comment" })
+  end,
 }
-
