@@ -4,7 +4,7 @@
 
 - **编辑**：2 空格缩进、系统剪贴板、相对行号；搜索忽略大小写，输入大写字母时区分大小写。
 - **代码**：Blink 补全与参数占位符，LSP 跳转、重命名、诊断和手动格式化。
-- **查找**：Telescope 搜索文件、项目文本和符号，netrw 浏览目录。
+- **查找**：Telescope 搜索文件、项目文本和符号，Neo-tree 文件侧栏。
 - **界面**：TokyoNight Moon 主题、lualine 状态栏。换行格式显示为 `LF` / `CRLF` / `CR`。
 - **学习**：cppman 标准库文档查询，以及独立的 Vim Practice 练习台。
 
@@ -118,9 +118,27 @@ IndentWidth: 2
 | 插入模式 `jk` | 退出插入模式 |
 | `Ctrl+d` / `Ctrl+u` | 向下 / 向上翻半页，并将光标所在行居中 |
 | `空格 /` | 清除搜索高亮 |
-| `空格 e` | 使用 netrw 浏览目录 |
+| `空格 e` | 使用 Neo-tree 文件侧栏 |
 
 新分屏默认向右或向下打开。状态栏的 `LF` / `CRLF` / `CR` 表示文件换行格式，不表示操作系统。
+
+### 文件侧栏
+
+Neo-tree 默认在左侧显示，宽度为 32 列，跟随当前文件，显示 Git 状态和诊断标记。侧栏以当前工作目录为根；`空格 E` 可定位当前文件。以下按键仅在侧栏内生效：
+
+| 按键 | 操作 |
+| --- | --- |
+| `j` / `k` | 向下 / 向上选择 |
+| `l` / `Enter` | 展开目录或打开文件 |
+| `h` | 收起目录 |
+| `a` / `A` | 新建文件 / 目录 |
+| `r` / `d` | 重命名 / 删除，按提示确认 |
+| `y` / `x` / `p` | 复制 / 剪切 / 粘贴文件 |
+| `s` / `S` | 在垂直 / 水平分屏中打开 |
+| `H` | 切换隐藏项显示 |
+| `R` | 刷新 |
+| `?` | 查看完整按键帮助 |
+| `q` | 关闭侧栏 |
 
 ### 搜索与代码导航
 
@@ -218,14 +236,16 @@ HHKB 等键盘也可使用 `:VimPracticePrev`、`:VimPracticeNext` 等命令。�
 | mason.nvim | 安装、管理语言服务器和工具 | [lsp.lua](lua/plugins/lsp.lua) |
 | trouble.nvim | 诊断列表 | [lsp.lua](lua/plugins/lsp.lua) |
 | telescope.nvim | 文件、文本、符号等搜索 | [telescope.lua](lua/plugins/telescope.lua) |
-| plenary.nvim | Telescope 使用的 Lua 工具库 | Telescope 的依赖 |
+| plenary.nvim | Telescope、Neo-tree 使用的 Lua 工具库 | 插件依赖 |
+| neo-tree.nvim | 文件侧栏、文件操作、Git 状态与诊断标记 | [neo-tree.lua](lua/plugins/neo-tree.lua) |
+| nui.nvim | Neo-tree 的界面组件库 | Neo-tree 的依赖 |
 | nvim-treesitter | 语法高亮、节点选择、折叠和缩进；C/C++ 使用内置缩进 | [treesitter.lua](lua/plugins/treesitter.lua) |
 | Comment.nvim | 行注释和块注释 | [comments.lua](lua/plugins/comments.lua) |
 | nvim-autopairs | 自动补齐括号、引号 | [autopairs.lua](lua/plugins/autopairs.lua) |
 | markdown-preview.nvim | 使用默认浏览器预览 Markdown | [markdown-preview.lua](lua/plugins/markdown-preview.lua) |
 | tokyonight.nvim | TokyoNight Moon 配色 | [ui.lua](lua/plugins/ui.lua) |
 | lualine.nvim | 状态栏 | [ui.lua](lua/plugins/ui.lua) |
-| nvim-web-devicons | 文件类型图标 | lualine 的依赖 |
+| nvim-web-devicons | 文件类型图标 | lualine、Neo-tree 的依赖 |
 
 Treesitter 自动安装 C、C++、Rust、Lua、PHP、Java 解析器；语法支持与 LSP 支持分别配置。
 
@@ -248,6 +268,7 @@ Treesitter 自动安装 C、C++、Rust、Lua、PHP、Java 解析器；语法支�
 | `:Lazy` | 查看插件安装、加载、更新及清理状态 |
 | `:Lazy restore` | 恢复 `lazy-lock.json` 锁定的插件版本 |
 | `:Mason` | 安装、管理语言服务器和工具 |
+| `:Neotree` | 打开文件侧栏 |
 | `:TSInstallInfo` | 查看 Treesitter 解析器状态 |
 | `:MarkdownPreviewToggle` | 开启 / 关闭当前 Markdown 的浏览器预览 |
 | `:checkhealth` | 检查依赖和运行环境 |
