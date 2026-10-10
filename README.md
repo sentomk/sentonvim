@@ -12,19 +12,20 @@
 
 ### 环境准备
 
-需要 Neovim **0.11.3 或更新版本**、Git，以及用于插件安装和 Treesitter 解析器编译的 C 编译器、curl、tar、unzip。
+需要 Neovim **0.12 或更新版本**、Git，以及用于插件安装和 Treesitter 解析器编译的 C 编译器、curl、tar、unzip。
 
 | 工具 | 用途 |
 | --- | --- |
 | `ripgrep`（`rg`） | 项目文本搜索 |
 | `fd` | 加快文件搜索，可选 |
+| `tree-sitter-cli`（0.26.1+） | 编译 Treesitter 解析器 |
 | `cppman` | C++ 标准库文档查询 |
 | Nerd Font | 正确显示状态栏等位置的图标，可选 |
 
 macOS 使用 Homebrew 安装：
 
 ```sh
-brew install neovim git ripgrep fd cppman
+brew install neovim git ripgrep fd cppman tree-sitter-cli
 ```
 
 如果还没有 Apple 命令行开发工具，运行 `xcode-select --install`。Linux 使用发行版的软件包管理器安装依赖；系统剪贴板还需要 Wayland 的 `wl-copy` / `wl-paste` 或 X11 的 `xclip` 等提供程序。macOS 使用自带的 `pbcopy` / `pbpaste`。
@@ -185,22 +186,24 @@ Neo-tree 默认在左侧显示，宽度为 32 列，跟随当前文件，显示 
 
 ### 补全与参数填写
 
-补全使用 Blink 的 `super-tab` 方案。候选不会自动选中，移动选择也不会修改正文。日常操作无需方向键。
+补全使用 Blink。列表打开时默认选中首项，移动选择不会修改正文，按 `Enter` 或 `Tab` 确认。
 
 | 按键 | 操作 |
 | --- | --- |
-| `Ctrl+n` / `Ctrl+p` | 选择下一项 / 上一项候选 |
-| `Tab` | 确认候选，或跳到下一参数；无候选和片段时正常缩进 |
+| `Ctrl+j` / `Ctrl+k`（或 `Ctrl+n` / `Ctrl+p`） | 选择下一项 / 上一项候选 |
+| `Tab` | 列表打开时确认候选；列表关闭时跳到下一参数；无候选和片段时正常缩进 |
+| `Ctrl+l` | 跳到下一参数，列表打开时也可使用 |
 | `Shift+Tab` | 跳到上一参数 |
-| `Enter` | 确认已选中的候选；未选中时正常换行 |
+| `Enter` | 确认已选中的候选；列表关闭时正常换行 |
 | `Ctrl+Space` | 显示补全列表或切换补全文档 |
 | `Ctrl+e` | 关闭补全列表 |
 | `Ctrl+b` / `Ctrl+f` | 向上 / 向下滚动补全文档 |
-| `Ctrl+k` | 显示 / 隐藏函数签名 |
 
 以 clangd 提供的 `std::vector` 模板补全为例：输入 `std::vec`，列表出现后按 `Tab` 确认首项；输入 `int` 替换选中的占位符，再按 `Tab` 跳出。
 
-填写参数期间，如果又弹出候选列表，**未主动选择候选时，`Tab` 继续跳参数**；用 `Ctrl+n/p` 选中候选后，`Tab` 确认该候选。参数占位符的内容由语言服务器提供。
+填写参数期间，如果又弹出候选列表，`Tab` 确认候选；需要直接跳到下一参数时使用 `Ctrl+l`。`Shift+Tab` 返回上一参数。参数占位符的内容由语言服务器提供。
+
+默认启用英文拼写检查，并忽略中文字符。可用 `]s` / `[s` 跳到下一处 / 上一处拼写提示，用 `z=` 查看建议，用 `zg` 将单词加入个人词典。
 
 ### 语法节点选择
 
