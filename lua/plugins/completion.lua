@@ -21,7 +21,13 @@ return {
       list = { selection = { preselect = true, auto_insert = false } },
       documentation = { auto_show = true },
     },
-    sources = { default = { "lsp", "path", "snippets", "buffer" } },
+    sources = {
+      default = { "lsp", "path", "snippets", "buffer", "doxygen" },
+      providers = {
+        -- Doxygen commands after "@" or a backslash, inside C/C++ comments.
+        doxygen = { name = "Doxygen", module = "core.doxygen", score_offset = 100 },
+      },
+    },
     signature = { enabled = true },
     fuzzy = { implementation = "prefer_rust_with_warning" },
   },
