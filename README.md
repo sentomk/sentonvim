@@ -66,7 +66,7 @@ NVIM_APPNAME=sentonvim nvim
 
 | 语言 | LSP 配置名 | 所需程序 |
 | --- | --- | --- |
-| C / C++ / Objective-C | `clangd` | `clangd` |
+| C / C++ / Objective-C / Objective-C++ | `clangd` | `clangd` |
 | Rust | `rust_analyzer` | `rust-analyzer`，以及项目所需的 Rust 工具链 |
 | Lua | `lua_ls` | `lua-language-server` |
 
@@ -92,6 +92,27 @@ CompileFlags:
 ```
 
 `.clangd` 影响编辑器解析；实际编译命令也要使用相同标准。
+
+### Objective-C++（.mm）
+
+`.mm` 固定识别为 `objcpp`，包括空文件和开头尚未出现 `#include` / `#import` 的文件。
+高亮使用 Neovim 内置的 Objective-C++ 混合语法与 clangd 语义高亮；补全接入已有的 blink.cmp。
+项目的 `compile_commands.json` 应包含对应 `.mm` 文件及 Objective-C++ 编译参数。
+
+Doxygen 标签补全支持 `///`、`//!`、`/** ... */` 与 `/*! ... */` 注释。在注释中输入 `@pa` 或 `\pa`，
+选择 `param` 后按 `Tab` 插入模板，再用 `Ctrl+l` / `Shift+Tab` 切换参数名和说明占位符。
+补全优先读取 Tree-sitter 注释节点，未启用对应解析器时读取内置语法栈；字符串中的
+`"// @param"` 和普通 Objective-C 指令不会触发 Doxygen 标签补全。
+
+检查当前文件：
+
+```vim
+:set filetype?
+:checkhealth vim.lsp
+```
+
+预期文件类型为 `objcpp`，当前缓冲区连接到 `clangd`。修改配置后重启 Neovim；已打开的
+`.mm` 缓冲区也可以用 `:setlocal filetype=objcpp` 立即纠正。
 
 ### 缩进与格式化
 

@@ -1,4 +1,4 @@
---- A blink.cmp source that completes Doxygen commands inside C and C++
+--- A blink.cmp source that completes Doxygen commands inside C-family
 --- comments: type `@` (or a backslash) and the commands appear.
 ---
 --- It only answers when the cursor is in a comment and the word under it
@@ -35,7 +35,7 @@ local commands = {
   { "defgroup",   "defgroup ${1:group} ${2:title}",     "Define a group" },
 }
 
---- Tells whether the cursor is inside a comment, as the syntax tree sees it.
+--- Use the syntax tree when available, or the native syntax stack for objcpp.
 local function in_comment()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   -- Look at the character just before the cursor: at the end of a line the
@@ -44,10 +44,17 @@ local function in_comment()
     pos = { row - 1, math.max(col - 1, 0) },
     ignore_injections = true,
   })
-  if not ok then return false end
-  while node do
-    if node:type() == "comment" then return true end
-    node = node:parent()
+  if ok then
+    while node do
+      if node:type() == "comment" then return true end
+      node = node:parent()
+    end
+  end
+  -- Objective-C++ uses native mixed C++/ObjC syntax. Check the whole stack:
+  -- a Doxygen tag may be inside a non-Comment group nested in cCommentL.
+  for _, id in ipairs(vim.fn.synstack(row, math.max(col, 1))) do
+    local name = vim.fn.synIDattr(id, "name"):lower()
+    if name:find("comment", 1, true) then return true end
   end
   return false
 end
