@@ -6,7 +6,7 @@
 - **代码**：Blink 补全与参数占位符，LSP 跳转、重命名、诊断和手动格式化。
 - **查找**：Telescope 搜索文件、项目文本和符号，Neo-tree 文件侧栏。
 - **界面**：TokyoNight Moon 主题、lualine 状态栏。换行格式显示为 `LF` / `CRLF` / `CR`。
-- **学习**：cppman 标准库文档查询，以及独立的 Vim Practice 练习台。
+- **学习**：cppman 标准库文档查询。
 
 ## 安装
 
@@ -214,20 +214,6 @@ Neo-tree 默认在左侧显示，宽度为 32 列，跟随当前文件，显示 
 | 节点选区中的 `Backspace` | 缩小到上一选区 |
 | 节点选区中的 `Tab` | 扩大到作用域 |
 
-### Vim Practice
-
-运行 `:VimPractice` 打开练习台。任务说明和目标常驻，完成后自动进入下一题。以下按键仅在练习窗口中使用：
-
-| 按键 | 操作 |
-| --- | --- |
-| `F4` | 选择专题 |
-| `F5` | 重置本题 |
-| `F7` | 上一题 |
-| `F8` | 跳过 / 下一题 |
-| `F9` | 暂停 / 恢复自动下一题 |
-
-HHKB 等键盘也可使用 `:VimPracticePrev`、`:VimPracticeNext` 等命令。完整说明见 [Vim Practice 文档](doc/vim-practice.md)。
-
 ## 插件与配置位置
 
 | 插件 | 用途 | 配置文件 |
@@ -259,7 +245,6 @@ Treesitter 自动安装 C、C++、Rust、Lua、PHP、Java 解析器；语法支�
 | [core/options.lua](lua/core/options.lua) | 缩进、搜索、剪贴板和窗口选项 |
 | [core/keymaps.lua](lua/core/keymaps.lua) | 全局快捷键 |
 | [plugin/cppman.lua](plugin/cppman.lua) | 异步 C++ 文档查询 |
-| [lua/vim_practice/](lua/vim_practice/) | Vim Practice 练习内容和界面 |
 | [ftdetect/otty.vim](ftdetect/otty.vim)、[syntax/otty.vim](syntax/otty.vim) | Otty 文件识别和高亮 |
 
 `lua/plugins/` 中的模块由 lazy.nvim 自动发现。
@@ -292,7 +277,6 @@ Treesitter 自动安装 C、C++、Rust、Lua、PHP、Java 解析器；语法支�
 bash tests/install.sh
 python3 tests/completion.py
 python3 tests/cpp_indent.py
-python3 tests/vim_practice/test_ui.py "$PWD" "$PWD/init.lua"
 ```
 
 Python 测试使用标准库。补全测试需要 `clangd` 和可用的 C++ 标准库头文件；使用完整配置的测试需要先安装插件。

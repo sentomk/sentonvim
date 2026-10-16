@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 root = Path(sys.argv[1] if len(sys.argv) > 1 else Path(__file__).resolve().parents[1])
-sys.path.insert(0, str(root / 'tests/vim_practice'))
+sys.path.insert(0, str(root / 'tests'))
 from ui_driver import Nvim
 
 n = Nvim(str(root), init=str(root / 'init.lua'))

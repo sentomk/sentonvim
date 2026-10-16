@@ -68,7 +68,7 @@ def unpack(data, pos=0):
 
 class Nvim:
     def __init__(self, root, width=120, height=36, init='NONE'):
-        self.test_dir = tempfile.mkdtemp(prefix='vim-practice-test-')
+        self.test_dir = tempfile.mkdtemp(prefix='nvim-test-')
         env = dict(os.environ, NVIM_LOG_FILE=self.test_dir + '/nvim.log')
         self.proc = subprocess.Popen([shutil.which('nvim') or '/opt/homebrew/bin/nvim', '--embed', '--headless', '-u', init, '-i', 'NONE', '--cmd', 'set noswapfile'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, cwd=self.test_dir)
         self.buffer, self.sequence, self.responses = b'', 0, {}
@@ -76,8 +76,6 @@ class Nvim:
         self.notifications = []
         self.call('nvim_ui_attach', width, height, {'ext_linegrid': True, 'rgb': True})
         self.lua("vim.opt.rtp:prepend(...)", root)
-        self.call('nvim_command', 'runtime plugin/vim_practice.lua')
-        self.lua("require('vim_practice').setup({delay=160,progress_path=...})", self.test_dir + '/progress.json')
         self.call('nvim_command', 'set laststatus=2 showtabline=0 noshowmode')
         self.pump(.08)
 
@@ -144,7 +142,6 @@ class Nvim:
         self.call('nvim_input', keys)
         self.pump(wait)
     def command(self, command, wait=.06): self.keys(':' + command + '<CR>', wait)
-    def state(self): return self.lua("local s=require('vim_practice').state(); return s and {id=s.lesson and s.lesson.id, stage=s.stage, passed=s.passed, auto=s.auto, index=s.index, status=s.status, work=s.work_buf, guide=s.guide_buf, win=s.work_win, tab=s.tab} or {}")
     def screen(self):
         self.pump(.02)
         return '\n'.join(''.join(c[0] for c in row) for row in self.grids[1])
